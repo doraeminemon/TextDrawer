@@ -15,32 +15,32 @@ class ViewController: UIViewController {
     @IBOutlet var drawTextView: TextDrawer!
     @IBOutlet var imageViewBackground: UIImageView!
     
-    @IBAction func changeTextColor(sender: AnyObject) {
+    @IBAction func changeTextColor(_ sender: AnyObject) {
         drawTextView.textColor = (sender as! UIButton).backgroundColor
     }
     
-    @IBAction func changeBackgroundColor(sender: AnyObject) {
+    @IBAction func changeBackgroundColor(_ sender: AnyObject) {
         drawTextView.textBackgroundColor = (sender as! UIButton).backgroundColor
     }
         
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        drawTextView.textBackgroundColor = UIColor.clearColor()
-        drawTextView.textColor = UIColor.whiteColor()
+        drawTextView.textBackgroundColor = UIColor.clear
+        drawTextView.textColor = .white
         drawTextView.text = "TextDrawer"
-        self.view.bringSubviewToFront(containerControlView)
+        self.view.bringSubview(toFront: containerControlView)
     }
 
-    @IBAction func renderImage(sender: AnyObject) {
+    @IBAction func renderImage(_ sender: AnyObject) {
          //drawTextView.renderTextOnImage(imageViewBackground.image!)
         let image = drawTextView.renderTextOnView(imageViewBackground)
-        self.performSegueWithIdentifier("previewSegue", sender: image)
+        self.performSegue(withIdentifier: "previewSegue", sender: image)
     }
     
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "previewSegue" {
-            (segue.destinationViewController as! PreviewViewController).image = sender as? UIImage
+            (segue.destination as! PreviewViewController).image = sender as? UIImage
         }
     }
 }

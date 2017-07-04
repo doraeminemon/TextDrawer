@@ -11,49 +11,49 @@
 import UIKit
 import Masonry
 
-public class TextDrawer: UIView, TextEditViewDelegate {
+open class TextDrawer: UIView, TextEditViewDelegate {
 
-    private var textEditView: TextEditView!
-    private var drawTextView: DrawTextView!
+    fileprivate var textEditView: TextEditView!
+    fileprivate var drawTextView: DrawTextView!
     
-    private var initialTransformation: CGAffineTransform!
-    private var initialCenterDrawTextView: CGPoint!
-    private var initialRotationTransform: CGAffineTransform!
-    private var initialReferenceRotationTransform: CGAffineTransform!
+    fileprivate var initialTransformation: CGAffineTransform!
+    fileprivate var initialCenterDrawTextView: CGPoint!
+    fileprivate var initialRotationTransform: CGAffineTransform!
+    fileprivate var initialReferenceRotationTransform: CGAffineTransform!
     
-    private var activieGestureRecognizer = NSMutableSet()
-    private var activeRotationGesture: UIRotationGestureRecognizer?
-    private var activePinchGesture: UIPinchGestureRecognizer?
+    fileprivate var activieGestureRecognizer = NSMutableSet()
+    fileprivate var activeRotationGesture: UIRotationGestureRecognizer?
+    fileprivate var activePinchGesture: UIPinchGestureRecognizer?
     
-    private lazy var tapRecognizer: UITapGestureRecognizer! = {
-        let tapRecognizer = UITapGestureRecognizer(target: self, action: "handleTapGesture:")
+    fileprivate lazy var tapRecognizer: UITapGestureRecognizer! = {
+        let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(TextDrawer.handleTapGesture(_:)))
         tapRecognizer.delegate = self
         return tapRecognizer
     }()
     
-    private lazy var panRecognizer: UIPanGestureRecognizer! = {
-        let panRecognizer = UIPanGestureRecognizer(target: self, action: "handlePanGesture:")
+    fileprivate lazy var panRecognizer: UIPanGestureRecognizer! = {
+        let panRecognizer = UIPanGestureRecognizer(target: self, action: #selector(TextDrawer.handlePanGesture(_:)))
         panRecognizer.delegate = self
         return panRecognizer
     }()
     
-    private lazy var rotateRecognizer: UIRotationGestureRecognizer! = {
-        let rotateRecognizer = UIRotationGestureRecognizer(target: self, action: "handlePinchGesture:")
+    fileprivate lazy var rotateRecognizer: UIRotationGestureRecognizer! = {
+        let rotateRecognizer = UIRotationGestureRecognizer(target: self, action: #selector(TextDrawer.handlePinchGesture(_:)))
         rotateRecognizer.delegate = self
         return rotateRecognizer
     }()
 
-    private lazy var zoomRecognizer: UIPinchGestureRecognizer! = {
-        let zoomRecognizer = UIPinchGestureRecognizer(target: self, action: "handlePinchGesture:")
+    fileprivate lazy var zoomRecognizer: UIPinchGestureRecognizer! = {
+        let zoomRecognizer = UIPinchGestureRecognizer(target: self, action: #selector(TextDrawer.handlePinchGesture(_:)))
         zoomRecognizer.delegate = self
         return zoomRecognizer
     }()
     
-    public func clearText() {
+    open func clearText() {
         text = ""
     }
     
-    public func resetTransformation() {
+    open func resetTransformation() {
         drawTextView.transform = initialTransformation
         drawTextView.mas_updateConstraints({ (make: MASConstraintMaker!) -> Void in
             make.edges.equalTo()(self)
@@ -66,7 +66,7 @@ public class TextDrawer: UIView, TextEditViewDelegate {
     //MARK: -
     //MARK: Setup DrawView
     
-    private func setup() {
+    fileprivate func setup() {
         self.layer.masksToBounds = true
         drawTextView = DrawTextView()
         initialTransformation = drawTextView.transform
@@ -88,16 +88,16 @@ public class TextDrawer: UIView, TextEditViewDelegate {
         addGestureRecognizer(rotateRecognizer)
         addGestureRecognizer(zoomRecognizer)
         
-        initialReferenceRotationTransform = CGAffineTransformIdentity
+        initialReferenceRotationTransform = CGAffineTransform.identity
     }
     
     //MARK: -
     //MARK: Initialisation
     
     init() {
-        super.init(frame: CGRectZero)
+        super.init(frame: CGRect.zero)
         setup()
-        drawTextView.textLabel.font = drawTextView.textLabel.font.fontWithSize(44)
+        drawTextView.textLabel.font = drawTextView.textLabel.font.withSize(44)
     }
     
     override init(frame: CGRect) {
@@ -110,8 +110,8 @@ public class TextDrawer: UIView, TextEditViewDelegate {
         setup()
     }
     
-    func textEditViewFinishedEditing(text: String) {
-        textEditView.hidden = true
+    func textEditViewFinishedEditing(_ text: String) {
+        textEditView.isHidden = true
         drawTextView.text = text
     }
 }
@@ -123,7 +123,7 @@ public extension TextDrawer {
     
     public var fontSize: CGFloat! {
         set {
-            drawTextView.textLabel.font = drawTextView.textLabel.font.fontWithSize(newValue)
+            drawTextView.textLabel.font = drawTextView.textLabel.font.withSize(newValue)
         }
         get {
             return  drawTextView.textLabel.font.pointSize
@@ -190,62 +190,62 @@ public extension TextDrawer {
 
 extension TextDrawer: UIGestureRecognizerDelegate {
     
-    public func gestureRecognizer(gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWithGestureRecognizer otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+    public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
         return true
     }
     
-    func handleTapGesture(recognizer: UITapGestureRecognizer) {
+    func handleTapGesture(_ recognizer: UITapGestureRecognizer) {
         textEditView.textEntry = text
         textEditView.isEditing = true
-        textEditView.hidden = false
+        textEditView.isHidden = false
     }
     
-    func handlePanGesture(recognizer: UIPanGestureRecognizer) {
-        let translation = recognizer.translationInView(self)
+    func handlePanGesture(_ recognizer: UIPanGestureRecognizer) {
+        let translation = recognizer.translation(in: self)
         switch recognizer.state {
-        case .Began, .Ended, .Failed, .Cancelled:
+        case .began, .ended, .failed, .cancelled:
             initialCenterDrawTextView = drawTextView.center
-        case .Changed:
-            drawTextView.center = CGPointMake(initialCenterDrawTextView.x + translation.x,
-                initialCenterDrawTextView.y + translation.y)
+        case .changed:
+            drawTextView.center = CGPoint(x: initialCenterDrawTextView.x + translation.x,
+                y: initialCenterDrawTextView.y + translation.y)
         default: return
         }
     }
     
-    func handlePinchGesture(recognizer: UIGestureRecognizer) {
+    func handlePinchGesture(_ recognizer: UIGestureRecognizer) {
         var transform = initialRotationTransform
         
         switch recognizer.state {
-        case .Began:
+        case .began:
             if activieGestureRecognizer.count == 0 {
                 initialRotationTransform = drawTextView.transform
             }
-            activieGestureRecognizer.addObject(recognizer)
+            activieGestureRecognizer.add(recognizer)
             break
             
-        case .Changed:
+        case .changed:
             for currentRecognizer in activieGestureRecognizer {
-                transform = applyRecogniser(currentRecognizer as? UIGestureRecognizer, currentTransform: transform)
+                transform = applyRecogniser(currentRecognizer as? UIGestureRecognizer, currentTransform: transform!)
             }
-            drawTextView.transform = transform
+            drawTextView.transform = transform!
             break
             
-        case .Ended, .Failed, .Cancelled:
+        case .ended, .failed, .cancelled:
             initialRotationTransform = applyRecogniser(recognizer, currentTransform: initialRotationTransform)
-            activieGestureRecognizer.removeObject(recognizer)
+            activieGestureRecognizer.remove(recognizer)
         default: return
         }
 
     }
     
-    private func applyRecogniser(recognizer: UIGestureRecognizer?, currentTransform: CGAffineTransform) -> CGAffineTransform {
+    fileprivate func applyRecogniser(_ recognizer: UIGestureRecognizer?, currentTransform: CGAffineTransform) -> CGAffineTransform {
         if let recognizer = recognizer {
             if recognizer is UIRotationGestureRecognizer {
-                return CGAffineTransformRotate(currentTransform, (recognizer as! UIRotationGestureRecognizer).rotation)
+                return currentTransform.rotated(by: (recognizer as! UIRotationGestureRecognizer).rotation)
             }
             if recognizer is UIPinchGestureRecognizer {
                 let scale = (recognizer as! UIPinchGestureRecognizer).scale
-                return CGAffineTransformScale(currentTransform, scale, scale)
+                return currentTransform.scaledBy(x: scale, y: scale)
             }
         }
         return currentTransform
@@ -261,34 +261,34 @@ public extension TextDrawer {
         return renderTextOnView(self)
     }
     
-    public func renderTextOnView(view: UIView) -> UIImage? {        
+    public func renderTextOnView(_ view: UIView) -> UIImage? {        
         UIGraphicsBeginImageContextWithOptions(view.bounds.size, false, 0)
         
-        view.layer.renderInContext(UIGraphicsGetCurrentContext()!)
+        view.layer.render(in: UIGraphicsGetCurrentContext()!)
         let img = UIGraphicsGetImageFromCurrentImageContext()
         
         UIGraphicsEndImageContext()
-        return renderTextOnImage(img)
+        return renderTextOnImage(img!)
     }
     
-    public func renderTextOnImage(image: UIImage) -> UIImage? {
+    public func renderTextOnImage(_ image: UIImage) -> UIImage? {
         let size = image.size
-        let scale = size.width / CGRectGetWidth(self.bounds)
+        let scale = size.width / self.bounds.width
         let color = layer.backgroundColor
 
         UIGraphicsBeginImageContextWithOptions(self.bounds.size, false, 0)
         
-        image.drawInRect(CGRectMake(CGRectGetWidth(self.bounds) / 2 - (image.size.width / scale) / 2,
-            CGRectGetHeight(self.bounds) / 2 - (image.size.height / scale) / 2,
-            image.size.width / scale,
-            image.size.height / scale))
-        layer.backgroundColor = UIColor.clearColor().CGColor
-        layer.renderInContext(UIGraphicsGetCurrentContext()!)
+        image.draw(in: CGRect(x: self.bounds.width / 2 - (image.size.width / scale) / 2,
+            y: self.bounds.height / 2 - (image.size.height / scale) / 2,
+            width: image.size.width / scale,
+            height: image.size.height / scale))
+        layer.backgroundColor = UIColor.clear.cgColor
+        layer.render(in: UIGraphicsGetCurrentContext()!)
         layer.backgroundColor = color
 
         
         let drawnImage = UIGraphicsGetImageFromCurrentImageContext();
         UIGraphicsEndImageContext();
-        return UIImage(CGImage: drawnImage.CGImage!, scale: 1, orientation: drawnImage.imageOrientation)
+        return UIImage(cgImage: (drawnImage?.cgImage!)!, scale: 1, orientation: (drawnImage?.imageOrientation)!)
     }
 }

@@ -10,13 +10,13 @@ import UIKit
 import Masonry
 
 protocol TextEditViewDelegate {
-    func textEditViewFinishedEditing(text: String)
+    func textEditViewFinishedEditing(_ text: String)
 }
 
-public class TextEditView: UIView {
+open class TextEditView: UIView {
 
-    private var textView: UITextView!
-    private var textContainer: UIView!
+    fileprivate var textView: UITextView!
+    fileprivate var textContainer: UIView!
     
     var delegate: TextEditViewDelegate?
 
@@ -34,23 +34,23 @@ public class TextEditView: UIView {
     var isEditing: Bool! {
         didSet {
             if isEditing == true {
-                textContainer.hidden = false;
-                userInteractionEnabled = true;
-                backgroundColor = UIColor.blackColor().colorWithAlphaComponent(0.65)
+                textContainer.isHidden = false;
+                isUserInteractionEnabled = true;
+                backgroundColor = UIColor.black.withAlphaComponent(0.65)
                 textView.becomeFirstResponder()
             }
             else {
-                backgroundColor = UIColor.clearColor()
+                backgroundColor = UIColor.clear
                 textView.resignFirstResponder()
-                textContainer.hidden = true;
-                userInteractionEnabled = false;
+                textContainer.isHidden = true;
+                isUserInteractionEnabled = false;
                 delegate?.textEditViewFinishedEditing(textView.text)
             }
         }
     }
         
     init() {
-        super.init(frame: CGRectZero)
+        super.init(frame: CGRect.zero)
         
         isEditing = false
         textContainer = UIView()
@@ -61,11 +61,11 @@ public class TextEditView: UIView {
         }
         
         textView = UITextView()
-        textView.tintColor = UIColor.whiteColor()
-        textView.font = UIFont.systemFontOfSize(44)
-        textView.textColor = UIColor.whiteColor()
-        textView.backgroundColor = UIColor.clearColor()
-        textView.returnKeyType = UIReturnKeyType.Done
+        textView.tintColor = UIColor.white
+        textView.font = UIFont.systemFont(ofSize: 44)
+        textView.textColor = UIColor.white
+        textView.backgroundColor = UIColor.clear
+        textView.returnKeyType = UIReturnKeyType.done
         textView.clipsToBounds = true
         textView.delegate = self
         
@@ -74,8 +74,8 @@ public class TextEditView: UIView {
             make.edges.equalTo()(self.textContainer)
         }
         
-        textContainer.hidden = true
-        userInteractionEnabled = false
+        textContainer.isHidden = true
+        isUserInteractionEnabled = false
         
         keyboardNotification()
     }
@@ -85,13 +85,13 @@ public class TextEditView: UIView {
     }
 
     deinit {
-        NSNotificationCenter.defaultCenter().removeObserver(self)
+        NotificationCenter.default.removeObserver(self)
     }
 }
 
 extension TextEditView: UITextViewDelegate {
     
-    public func textView(textView: UITextView, shouldChangeTextInRange range: NSRange, replacementText text: String) -> Bool {
+    public func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
         if text == "\n" {
             isEditing = false
             return false
@@ -106,17 +106,17 @@ extension TextEditView: UITextViewDelegate {
 extension TextEditView {
     
     func keyboardNotification() {
-        NSNotificationCenter.defaultCenter().addObserverForName(UIKeyboardWillChangeFrameNotification, object: nil, queue: nil) { (notification: NSNotification) -> Void in
+        NotificationCenter.default.addObserver(forName: NSNotification.Name.UIKeyboardWillChangeFrame, object: nil, queue: nil) { (notification: Notification) -> Void in
             if let userInfo = notification.userInfo {
                 self.textContainer.layer.removeAllAnimations()
-                if let keyboardRectEnd = userInfo[UIKeyboardFrameEndUserInfoKey]?.CGRectValue,
-                    let duration = userInfo[UIKeyboardAnimationDurationUserInfoKey]?.floatValue {
+                if let keyboardRectEnd = (userInfo[UIKeyboardFrameEndUserInfoKey] as AnyObject).cgRectValue,
+                    let duration = (userInfo[UIKeyboardAnimationDurationUserInfoKey] as AnyObject).floatValue {
                         
-                        dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                        DispatchQueue.main.async(execute: { () -> Void in
                             self.textContainer.mas_updateConstraints({ (make: MASConstraintMaker!) -> Void in
-                                make.bottom.offset()(-CGRectGetHeight(keyboardRectEnd))
+                                make.bottom.offset()(-keyboardRectEnd.height)
                             })
-                            UIView.animateWithDuration(NSTimeInterval(duration), delay: 0, options: UIViewAnimationOptions.BeginFromCurrentState, animations: { () -> Void in
+                            UIView.animate(withDuration: TimeInterval(duration), delay: 0, options: UIViewAnimationOptions.beginFromCurrentState, animations: { () -> Void in
                                 self.textContainer.layoutIfNeeded()
                                 }, completion: nil)
                         })

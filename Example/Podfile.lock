@@ -1,13 +1,19 @@
 PODS:
-  - Masonry (0.6.2)
+  - Masonry (1.0.2)
   - TextDrawer (1.0.6):
     - Masonry
 
 DEPENDENCIES:
-  - TextDrawer (~> 1.0.6)
+  - TextDrawer (from `..`)
+
+EXTERNAL SOURCES:
+  TextDrawer:
+    :path: ".."
 
 SPEC CHECKSUMS:
-  Masonry: 362e8a1cc0beada4a4c4832d5e863da2a51533be
-  TextDrawer: f1e7368499f747bf6c42322187f38075d453042d
+  Masonry: 7c429b56da9d4ee0bbb3ed77a5ea710d6a5df39e
+  TextDrawer: 58ac2723f929030ebbe74cf0ee16c11b79e3d73c
 
-COCOAPODS: 0.38.0
+PODFILE CHECKSUM: e6ae900997b4414b4bc8a2600064ea88ce79522a
+
+COCOAPODS: 1.2.1

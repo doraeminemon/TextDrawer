@@ -13,8 +13,8 @@ class PreviewViewController: UIViewController {
     var image: UIImage?
     @IBOutlet var imageView: UIImageView!
     
-    @IBAction func returnController(sender: AnyObject) {
-        self.navigationController?.popToRootViewControllerAnimated(true)
+    @IBAction func returnController(_ sender: AnyObject) {
+        self.navigationController?.popToRootViewController(animated: true)
     }
     
     override func viewDidLoad() {
